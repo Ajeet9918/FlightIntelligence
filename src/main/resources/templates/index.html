@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyPulse — Flight Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0a0c10;
+      --sky:       #0d1f3c;
+      --gold:      #c9a84c;
+      --gold-light:#e8c96a;
+      --mist:      rgba(255,255,255,0.05);
+      --border:    rgba(201,168,76,0.22);
+      --text-dim:  rgba(255,255,255,0.50);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .sky-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 110%, rgba(26,58,107,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% -10%, rgba(13,42,85,0.3) 0%, transparent 55%),
+        linear-gradient(170deg, #0a0c10 0%, #0d1a2e 45%, #0a1628 100%);
+    }
+
+    .stars {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        radial-gradient(1px 1px at 15%  20%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 72%  8%,  rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88%  55%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 33%  70%, rgba(255,255,255,0.30) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55%  90%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5%   48%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 95%  30%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 45% 15%, rgba(201,168,76,0.45) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 78% 75%, rgba(201,168,76,0.35) 0%, transparent 100%);
+    }
+
+    .horizon-line {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      z-index: 1; opacity: 0.35;
+    }
+
+    .page {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 52px 56px;
+      border-right: 1px solid var(--border);
+    }
+
+    .wordmark {
+      display: flex; align-items: center; gap: 12px;
+      animation: fadeUp 0.7s ease both;
+    }
+    .wordmark-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--gold);
+    }
+    .wordmark-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600;
+      letter-spacing: 0.08em; color: var(--gold);
+    }
+
+    .left-hero { animation: fadeUp 0.8s 0.12s ease both; }
+
+    .eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before {
+      content: ''; display: block; width: 32px; height: 1px; background: var(--gold);
+    }
+
+    .main-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(50px, 5.5vw, 78px);
+      font-weight: 300; line-height: 1.05;
+      letter-spacing: -0.02em; margin-bottom: 28px;
+    }
+    .main-heading em { font-style: italic; color: var(--gold-light); }
+
+    .sub-text {
+      font-size: 15px; font-weight: 300;
+      color: var(--text-dim); line-height: 1.75; max-width: 380px;
+    }
+
+    .left-footer { animation: fadeUp 0.8s 0.25s ease both; }
+
+    .stats-row {
+      display: flex; gap: 40px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 400; line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px; color: var(--text-dim);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 52px 56px; position: relative;
+    }
+
+    .plane-deco {
+      position: absolute; top: 10%; right: 8%;
+      font-size: 80px; opacity: 0.12;
+      transform: rotate(-18deg);
+      animation: drift 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes drift {
+      0%, 100% { transform: rotate(-18deg) translateY(0); }
+      50%       { transform: rotate(-18deg) translateY(-18px); }
+    }
+
+    .action-card {
+      width: 100%; max-width: 420px;
+      animation: fadeUp 0.8s 0.22s ease both;
+    }
+
+    .card-label {
+      font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    .glass-box {
+      background: var(--mist);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px;
+      backdrop-filter: blur(16px);
+      margin-bottom: 20px; position: relative; overflow: hidden;
+    }
+    .glass-box::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.45), transparent);
+    }
+
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400; margin-bottom: 8px;
+    }
+    .form-sub {
+      font-size: 13px; color: var(--text-dim);
+      line-height: 1.65; margin-bottom: 32px;
+    }
+
+    .feature-pills {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+    }
+    .pill {
+      font-size: 11px; padding: 6px 14px; border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .pill-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
+    }
+
+    .cta-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 18px 28px;
+      background: var(--gold); color: var(--ink);
+      border: none; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 500;
+      cursor: pointer; transition: all 0.22s ease;
+      position: relative; overflow: hidden;
+    }
+    .cta-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
+      opacity: 0; transition: opacity 0.22s;
+    }
+    .cta-btn:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(201,168,76,0.32); }
+    .cta-btn:hover::after { opacity: 1; }
+    .cta-btn:active { transform: translateY(0); }
+    .cta-arrow { font-size: 18px; transition: transform 0.22s; }
+    .cta-btn:hover .cta-arrow { transform: translateX(4px); }
+
+    .trust-strip {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; color: var(--text-dim);
+    }
+    .trust-strip::before, .trust-strip::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07);
+    }
+
+    .route-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .route-tag {
+      font-size: 11px; padding: 5px 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px; color: var(--text-dim);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    @media (max-width: 860px) {
+      body { overflow: auto; }
+      .page { grid-template-columns: 1fr; }
+      .left-panel { padding: 36px 28px 28px; border-right: none; border-bottom: 1px solid var(--border); }
+      .left-hero { margin: 36px 0; }
+      .right-panel { padding: 36px 28px 60px; }
+      .plane-deco { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sky-bg"></div>
+  <div class="stars"></div>
+  <div class="horizon-line"></div>
+
+  <div class="page">
+    <div class="left-panel">
+      <div class="wordmark">
+        <div class="wordmark-icon">✦</div>
+        <div class="wordmark-text">SkyPulse</div>
+      </div>
+      <div class="left-hero">
+        <div class="eyebrow">Flight Intelligence Platform</div>
+        <h1 class="main-heading">Know where<br>the world<br>is <em>flying</em>.</h1>
+        <p class="sub-text">Real-time route analytics, demand heatmaps, and AI-generated travel insights — all in one unified dashboard.</p>
+      </div>
+      <div class="left-footer">
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-value">20+</div>
+            <div class="stat-label">Live Flights</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">7d</div>
+            <div class="stat-label">Price Trends</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">AI</div>
+            <div class="stat-label">Insights</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="plane-deco">✈</div>
+      <div class="action-card">
+        <div class="card-label">Quick Analysis</div>
+        <div class="glass-box">
+          <div class="form-title">Fetch Live Data</div>
+          <p class="form-sub">Pull current flight data from AviationStack and generate route analytics instantly.</p>
+          <div class="feature-pills">
+            <div class="pill"><span class="pill-dot"></span>Route frequency</div>
+            <div class="pill"><span class="pill-dot"></span>Price simulation</div>
+            <div class="pill"><span class="pill-dot"></span>AI insights</div>
+          </div>
+          <form method="post" th:action="@{/results}" id="fetchForm">
+            <button type="submit" class="cta-btn" id="ctaBtn">
+              <span id="btnText">Analyse Flights Now</span>
+              <span class="cta-arrow" id="btnArrow">→</span>
+            </button>
+          </form>
+        </div>
+        <div class="trust-strip">Powered by AviationStack API</div>
+        <div class="route-tags">
+          <span class="route-tag">JFK → LHR</span>
+          <span class="route-tag">DXB → BOM</span>
+          <span class="route-tag">SIN → SYD</span>
+          <span class="route-tag">CDG → LAX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('fetchForm').addEventListener('submit', function() {
+      document.getElementById('btnText').textContent = 'Fetching data…';
+      document.getElementById('btnArrow').textContent = '⟳';
+      document.getElementById('ctaBtn').style.opacity = '0.7';
+      document.getElementById('ctaBtn').style.pointerEvents = 'none';
+    });
+  </script>
+</body>
+</html>
