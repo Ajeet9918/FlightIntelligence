@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: flight-intelligence
+    runtime: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/airline-booking-app-1.0.0.jar
+    envVars:
+      - key: PORT
+        value: 8080
