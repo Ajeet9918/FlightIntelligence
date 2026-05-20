@@ -1,0 +1,11 @@
+# Application properties with credentials
+src/main/resources/application.properties
+
+# Maven
+target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.class
