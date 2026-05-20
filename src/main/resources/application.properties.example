@@ -1,0 +1,7 @@
+# Copy this file to application.properties and fill in your values
+server.port=${PORT:8080}
+spring.application.name=airline-booking-app
+spring.thymeleaf.cache=false
+spring.data.mongodb.uri=${MONGODB_URI}
+logging.level.org.springframework.security=INFO
+logging.level.com.airline=DEBUG
