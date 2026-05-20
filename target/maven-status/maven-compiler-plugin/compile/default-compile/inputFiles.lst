@@ -1,5 +1,12 @@
 D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\controller\FlightController.java
 D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\AirlineBookingApplication.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\service\UserService.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\config\SecurityConfig.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\repository\UserRepository.java
 D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\service\AviationService.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\controller\AuthController.java
 D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\model\RouteStats.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\config\PasswordConfig.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\dto\RegisterDto.java
 D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\model\PriceTrend.java
+D:\Downloads\airline-booking-java\airline-java\src\main\java\com\airline\model\User.java

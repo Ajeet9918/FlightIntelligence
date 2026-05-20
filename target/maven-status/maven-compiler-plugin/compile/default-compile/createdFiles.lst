@@ -1,2 +1,3 @@
-com\airline\controller\FlightController.class
+com\airline\dto\RegisterDto.class
+com\airline\controller\AuthController.class
 com\airline\model\PriceTrend.class

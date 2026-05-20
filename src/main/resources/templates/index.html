@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -250,9 +251,16 @@
 
   <div class="page">
     <div class="left-panel">
-      <div class="wordmark">
-        <div class="wordmark-icon">✦</div>
-        <div class="wordmark-text">SkyPulse</div>
+      <div class="wordmark" style="justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="wordmark-icon">✦</div>
+          <div class="wordmark-text">SkyPulse</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <a th:href="@{/login}"     style="font-size:12px;padding:6px 14px;border-radius:7px;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);text-decoration:none;" sec:authorize="isAnonymous()">Sign In</a>
+          <a th:href="@{/register}"  style="font-size:12px;padding:6px 14px;border-radius:7px;background:#c9a84c;color:#0a0c10;font-weight:500;text-decoration:none;" sec:authorize="isAnonymous()">Register</a>
+          <a th:href="@{/dashboard}" style="font-size:12px;padding:6px 14px;border-radius:7px;background:#c9a84c;color:#0a0c10;font-weight:500;text-decoration:none;" sec:authorize="isAuthenticated()">Dashboard</a>
+        </div>
       </div>
       <div class="left-hero">
         <div class="eyebrow">Flight Intelligence Platform</div>

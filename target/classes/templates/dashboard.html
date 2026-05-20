@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyPulse — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0a0c10; --surface: #0f1318; --card: #131820;
+      --gold: #c9a84c; --gold-light: #e8c96a; --gold-dim: rgba(201,168,76,0.12);
+      --border: rgba(255,255,255,0.07); --border-gold: rgba(201,168,76,0.22);
+      --text-dim: rgba(255,255,255,0.45); --text-mid: rgba(255,255,255,0.70);
+      --green: #2ecc8a; --sidebar-w: 240px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: #fff; display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 36px 0; position: fixed; inset: 0 auto 0 0; z-index: 10;
+    }
+    .sb-logo { display: flex; align-items: center; gap: 10px; padding: 0 28px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .sb-icon { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--gold); }
+    .sb-txt { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--gold); letter-spacing: 0.06em; }
+
+    .nav-sec { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); padding: 0 28px 8px; margin-top: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 28px; font-size: 13px; color: var(--text-mid); border-left: 2px solid transparent; transition: all 0.18s; text-decoration: none; }
+    .nav-item:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-dim); }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+    .sb-user { margin-top: auto; padding: 20px 28px; border-top: 1px solid var(--border); }
+    .user-name { font-size: 13px; font-weight: 500; color: #fff; }
+    .user-email { font-size: 11px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logout-btn {
+      display: block; margin-top: 12px; padding: 8px 14px; width: 100%;
+      background: rgba(232,98,90,0.1); border: 1px solid rgba(232,98,90,0.25);
+      color: #e8625a; border-radius: 7px; font-size: 12px; text-align: center;
+      text-decoration: none; transition: all 0.18s; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    }
+    .logout-btn:hover { background: rgba(232,98,90,0.2); }
+
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 44px 48px; }
+
+    .page-header { margin-bottom: 40px; }
+    .breadcrumb { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; }
+    .page-title span { color: var(--gold); }
+    .welcome-sub { font-size: 14px; color: var(--text-dim); margin-top: 8px; }
+
+    /* ── STAT CARDS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px 28px;
+      transition: border-color 0.18s;
+    }
+    .stat-card:hover { border-color: var(--border-gold); }
+    .stat-icon { font-size: 22px; margin-bottom: 16px; }
+    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; line-height: 1; }
+    .stat-lbl { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-top: 6px; }
+
+    /* ── QUICK ACTIONS ── */
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; margin-bottom: 18px; }
+    .actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 40px; }
+    .action-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px;
+      text-decoration: none; color: #fff;
+      transition: all 0.18s; display: block; position: relative; overflow: hidden;
+    }
+    .action-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0; transition: opacity 0.18s; }
+    .action-card:hover { border-color: var(--border-gold); transform: translateY(-2px); }
+    .action-card:hover::before { opacity: 1; }
+    .action-icon { font-size: 28px; margin-bottom: 14px; }
+    .action-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+    .action-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .action-arrow { position: absolute; top: 28px; right: 28px; font-size: 18px; color: var(--text-dim); transition: all 0.18s; }
+    .action-card:hover .action-arrow { color: var(--gold); transform: translateX(4px); }
+
+    /* ── INFO CARD ── */
+    .info-card {
+      background: var(--card); border: 1px solid var(--border-gold);
+      border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden;
+    }
+    .info-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .info-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .info-icon { width: 26px; height: 26px; border-radius: 6px; background: var(--gold-dim); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .info-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+    .info-body { font-size: 14px; color: var(--text-mid); line-height: 1.7; }
+
+    .api-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 28px 20px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .actions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-icon">✦</div>
+      <div class="sb-txt">SkyPulse</div>
+    </div>
+
+    <div class="nav-sec">Main</div>
+    <a class="nav-item active" th:href="@{/dashboard}"><span class="nav-icon">⊞</span> Dashboard</a>
+    <a class="nav-item" th:href="@{/}"><span class="nav-icon">◈</span> Flight Analytics</a>
+
+    <div class="nav-sec" style="margin-top:16px;">Account</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◎</span> My Profile</a>
+
+    <div class="sb-user">
+      <div class="user-name" th:text="${user.name}">User Name</div>
+      <div class="user-email" th:text="${user.email}">user@email.com</div>
+      <form method="post" th:action="@{/logout}">
+        <button type="submit" class="logout-btn">Sign Out</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-header">
+      <div class="breadcrumb">Home / Dashboard</div>
+      <h1 class="page-title">Welcome, <span th:text="${user.name}">User</span> ✦</h1>
+      <p class="welcome-sub">Here's your SkyPulse overview. More features coming soon.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">✈️</div>
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Total Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🗓️</div>
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Upcoming Trips</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📍</div>
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Routes Explored</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-title">Quick Actions</div>
+    <div class="actions-grid">
+      <a class="action-card" th:href="@{/}">
+        <div class="action-icon">📊</div>
+        <div class="action-title">Flight Analytics</div>
+        <div class="action-desc">Fetch live flight data, explore popular routes and 7-day price trends.</div>
+        <div class="action-arrow">→</div>
+      </a>
+      <a class="action-card" href="#">
+        <div class="action-icon">🎫</div>
+        <div class="action-title">Book a Ticket</div>
+        <div class="action-desc">Search and book flights — coming in the next phase of development.</div>
+        <div class="action-arrow">→</div>
+      </a>
+      <a class="action-card" href="#">
+        <div class="action-icon">📋</div>
+        <div class="action-title">My Bookings</div>
+        <div class="action-desc">View, manage and cancel your booked tickets — coming soon.</div>
+        <div class="action-arrow">→</div>
+      </a>
+      <a class="action-card" href="#">
+        <div class="action-icon">◎</div>
+        <div class="action-title">My Profile</div>
+        <div class="action-desc">Update your personal details and account preferences.</div>
+        <div class="action-arrow">→</div>
+      </a>
+    </div>
+
+    <!-- Status -->
+    <div class="info-card">
+      <div class="info-header">
+        <div class="info-icon">✦</div>
+        <div class="info-label">System Status</div>
+      </div>
+      <div class="info-body">
+        <span class="api-dot"></span> AviationStack API is live and connected.
+        Your account was created on
+        <strong th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy')}"></strong>.
+        Booking features will be available in the next update.
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>
