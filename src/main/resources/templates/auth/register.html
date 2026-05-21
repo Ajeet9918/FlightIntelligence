@@ -87,7 +87,7 @@
           <label class="form-label">Full Name</label>
           <input type="text" class="form-input" th:field="*{name}"
                  th:classappend="${#fields.hasErrors('name')} ? 'error'"
-                 placeholder="Ajeet Kumar"/>
+                 placeholder="Your Name"/>
           <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
         </div>
 
@@ -95,7 +95,7 @@
           <label class="form-label">Email Address</label>
           <input type="email" class="form-input" th:field="*{email}"
                  th:classappend="${#fields.hasErrors('email')} ? 'error'"
-                 placeholder="you@example.com"/>
+                 placeholder="youremail@example.com"/>
           <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
         </div>
 
@@ -111,11 +111,11 @@
           <label class="form-label">Confirm Password</label>
           <input type="password" class="form-input" th:field="*{confirmPassword}"
                  th:classappend="${#fields.hasErrors('confirmPassword')} ? 'error'"
-                 placeholder="Repeat your password"/>
+                 placeholder="Confrim your password"/>
           <div class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
         </div>
 
-        <button type="submit" class="btn">Create Account →</button>
+        <button type="submit" class="btn">Create New Account →</button>
       </form>
     </div>
 
