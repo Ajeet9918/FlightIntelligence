@@ -6,7 +6,6 @@ A full-stack flight analytics web application built with **Java 17** and **Sprin
 
 ## 🚀 Live Demo
 
-> Coming soon — deploy on Railway or Render for a live URL.
 https://flight-intelligence-production-0549.up.railway.app/
 ---
 
